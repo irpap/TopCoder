@@ -1,29 +1,19 @@
-/*
- * -----------------------------------------------------------------------
- *
- * QATARLYST LIMITED
- *
- * -----------------------------------------------------------------------
- *
- * (C) Copyright 2012 Qatarlyst Limited. All rights reserved.
- *
- * NOTICE:  All information contained herein or attendant hereto is,
- *          and remains, the property of Qatarlyst Limited.  Many of the
- *          intellectual and technical concepts contained herein are
- *          proprietary to Qatarlyst Limited. Any dissemination of this
- *          information or reproduction of this material is strictly
- *          forbidden unless prior written permission is obtained
- *          from Qatarlyst Limited.
- *
- * -----------------------------------------------------------------------
- */
-
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Lottery {
+
+    int[][] pascalTriangle;
+
     public String[] sortByOdds(String[] rules) {
+        this.pascalTriangle = createPascalTriangle(101);
         ArrayList<Rule> r = readRules(rules);
-        return null;
+        String[] lotteryNames = new String[r.size()];
+        for (int i = 0; i < r.size(); i++) {
+            lotteryNames[i] = r.get(i).name;
+        }
+        Arrays.sort(lotteryNames);
+        return lotteryNames;
     }
 
     private ArrayList<Rule> readRules(String[] rules) {
@@ -34,8 +24,8 @@ public class Lottery {
             String[] rest = nameAndRest[1].split(" ");
             int choices = Integer.parseInt(rest[1]);
             int blanks = Integer.parseInt(rest[2]);
-            boolean sorted = rest[3].equals("F") ? false : true;
-            boolean unique = rest[4].equals("F") ? false : true;
+            boolean sorted = !rest[3].equals("F");
+            boolean unique = !rest[4].equals("F");
             Rule rule = new Rule(name, choices, blanks, sorted, unique);
             r.add(rule);
         }
@@ -56,5 +46,50 @@ public class Lottery {
         public int blanks;
         public boolean sorted;
         public boolean unique;
+    }
+
+
+    /**
+     * Rules:
+     * TT : n choose k
+     * FT: (n choose k) k!
+     * TF: (n+k-1) choose k
+     * FF: choices^blanks
+     */
+    private long numberOfTickets(Rule rule) {
+
+        if (rule.sorted && rule.unique) {
+            return choose(rule.choices, rule.blanks);
+        } else if (!rule.sorted && rule.unique) {
+            return choose(rule.choices, rule.blanks) * fac(rule.blanks);
+        } else if (rule.sorted && !rule.unique) {
+            return choose(rule.choices + rule.blanks - 1, rule.blanks);
+        } else {
+            return (long) Math.pow(rule.choices, rule.blanks);
+        }
+    }
+
+    private long fac(int n) {
+        if (n == 1) return 1;
+        return n * fac(n - 1);
+    }
+
+    private long choose(int n, int k) {
+        return pascalTriangle[n][k];
+    }
+
+    private int[][] createPascalTriangle(int n) {
+        int[][] triangle = new int[n][];
+        for (int i = 0; i < n; i++) {
+            triangle[i] = new int[i + 1];
+            triangle[i][0] = 1;
+            triangle[i][i] = 1;
+        }
+        for (int i = 1; i < triangle.length; i++) {
+            for (int j = 1; j < triangle[i].length - 1; j++) {
+                triangle[i][j] = triangle[i - 1][j - 1] + triangle[i - 1][j];
+            }
+        }
+        return triangle;
     }
 }
