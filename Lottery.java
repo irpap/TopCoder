@@ -1,19 +1,23 @@
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 public class Lottery {
 
-    int[][] pascalTriangle;
+    long[][] pascalTriangle;
 
     public String[] sortByOdds(String[] rules) {
         this.pascalTriangle = createPascalTriangle(101);
         ArrayList<Rule> r = readRules(rules);
-        String[] lotteryNames = new String[r.size()];
-        for (int i = 0; i < r.size(); i++) {
-            lotteryNames[i] = r.get(i).name;
+        ArrayList<LotteryNumberOfTickets> sorted = new ArrayList<LotteryNumberOfTickets>();
+        for (Rule rule : r) {
+            sorted.add(new LotteryNumberOfTickets(rule.name, (int) numberOfTickets(rule)));
         }
-        Arrays.sort(lotteryNames);
-        return lotteryNames;
+        Collections.sort(sorted);
+        String[] sortedNames = new String[sorted.size()];
+        for (int i = 0; i < sorted.size(); i++) {
+            sortedNames[i] = sorted.get(i).name;
+        }
+        return sortedNames;
     }
 
     private ArrayList<Rule> readRules(String[] rules) {
@@ -30,6 +34,20 @@ public class Lottery {
             r.add(rule);
         }
         return r;
+    }
+
+    private class LotteryNumberOfTickets implements Comparable {
+        String name;
+        int numberOfTickets;
+
+        public LotteryNumberOfTickets(String name, int numberOfTickets) {
+            this.name = name;
+            this.numberOfTickets = numberOfTickets;
+        }
+
+        public int compareTo(Object o) {
+            return numberOfTickets - ((LotteryNumberOfTickets) o).numberOfTickets;
+        }
     }
 
     private class Rule {
@@ -78,12 +96,12 @@ public class Lottery {
         return pascalTriangle[n][k];
     }
 
-    private int[][] createPascalTriangle(int n) {
-        int[][] triangle = new int[n][];
+    private long[][] createPascalTriangle(int n) {
+        long[][] triangle = new long[n][];
         for (int i = 0; i < n; i++) {
-            triangle[i] = new int[i + 1];
-            triangle[i][0] = 1;
-            triangle[i][i] = 1;
+            triangle[i] = new long[i + 1];
+            triangle[i][0] = 1L;
+            triangle[i][i] = 1L;
         }
         for (int i = 1; i < triangle.length; i++) {
             for (int j = 1; j < triangle[i].length - 1; j++) {
