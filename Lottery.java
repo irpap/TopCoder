@@ -8,9 +8,10 @@ public class Lottery {
     public String[] sortByOdds(String[] rules) {
         this.pascalTriangle = createPascalTriangle(101);
         ArrayList<Rule> r = readRules(rules);
+        Collections.sort(r);
         ArrayList<LotteryNumberOfTickets> sorted = new ArrayList<LotteryNumberOfTickets>();
         for (Rule rule : r) {
-            sorted.add(new LotteryNumberOfTickets(rule.name, (int) numberOfTickets(rule)));
+            sorted.add(new LotteryNumberOfTickets(rule.name, numberOfTickets(rule)));
         }
         Collections.sort(sorted);
         String[] sortedNames = new String[sorted.size()];
@@ -38,19 +39,19 @@ public class Lottery {
 
     private class LotteryNumberOfTickets implements Comparable {
         String name;
-        int numberOfTickets;
+        long numberOfTickets;
 
-        public LotteryNumberOfTickets(String name, int numberOfTickets) {
+        public LotteryNumberOfTickets(String name, long numberOfTickets) {
             this.name = name;
             this.numberOfTickets = numberOfTickets;
         }
 
         public int compareTo(Object o) {
-            return numberOfTickets - ((LotteryNumberOfTickets) o).numberOfTickets;
+            return new Long(numberOfTickets).compareTo(((LotteryNumberOfTickets) o).numberOfTickets);
         }
     }
 
-    private class Rule {
+    private class Rule implements Comparable {
         private Rule(String name, int choices, int blanks, boolean sorted, boolean unique) {
             this.name = name;
             this.choices = choices;
@@ -64,6 +65,10 @@ public class Lottery {
         public int blanks;
         public boolean sorted;
         public boolean unique;
+
+        public int compareTo(Object o) {
+            return name.compareTo(((Rule) o).name);
+        }
     }
 
 
