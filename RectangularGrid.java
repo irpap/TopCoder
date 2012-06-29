@@ -2,8 +2,9 @@
 public class RectangularGrid {
     public long countRectangles (int width, int height) {
         long count = 0;
-        for (int i = 1; i <= Math.min(width, height); i++) {
-            for (int j = i + 1; j <= Math.max(width, height); j++) {
+        for (int i = 1; i <= width; i++) {
+            for (int j = 1; j <= height; j++) {
+                if (i == j) { continue; }
                 //ixj is all the rectangle sizes we'll try
                 System.out.println("(x,y) = (" + i + ", " + j + ")");
                 long fits = howManyTimesItFits(i, j, width, height);
@@ -16,17 +17,6 @@ public class RectangularGrid {
     }
 
     private long howManyTimesItFits (final int x, final int y, final int width, final int height) {
-        long count = 0;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if (fitsAt(i, j, x, y, width, height)) { count++; }
-                if (fitsAt(i, j, y, x, width, height)) { count++; }
-            }
-        }
-        return count;
-    }
-
-    private boolean fitsAt (final int i, final int j, final int x, final int y, final int width, final int height) {
-        return i + x <= width && j + y <= height;
+        return (width - x + 1) * (height - y + 1);
     }
 }
