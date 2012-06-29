@@ -6,13 +6,13 @@ public class RectangularGrid {
             for (int j = 1; j <= height; j++) {
                 if (i == j) { continue; }
                 //ixj is all the rectangle sizes we'll try
-                System.out.println("(x,y) = (" + i + ", " + j + ")");
+//                System.out.println("(x,y) = (" + i + ", " + j + ")");
                 long fits = howManyTimesItFits(i, j, width, height);
-                System.out.println("fits " + fits + " times");
+//                System.out.println("fits " + fits + " times");
                 count += fits;
             }
         }
-        System.out.println(count);
+//        System.out.println(count);
         return count;
     }
 
