@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
+/** SRM 144 */
 public class Lottery {
 
     long[][] pascalTriangle;
 
-    public String[] sortByOdds(String[] rules) {
+    public String[] sortByOdds (String[] rules) {
         this.pascalTriangle = createPascalTriangle(101);
         ArrayList<Rule> r = readRules(rules);
         Collections.sort(r);
@@ -21,7 +22,7 @@ public class Lottery {
         return sortedNames;
     }
 
-    private ArrayList<Rule> readRules(String[] rules) {
+    private ArrayList<Rule> readRules (String[] rules) {
         ArrayList<Rule> r = new ArrayList<Rule>(rules.length);
         for (String s : rules) {
             String[] nameAndRest = s.split(":");
@@ -41,18 +42,18 @@ public class Lottery {
         String name;
         long numberOfTickets;
 
-        public LotteryNumberOfTickets(String name, long numberOfTickets) {
+        public LotteryNumberOfTickets (String name, long numberOfTickets) {
             this.name = name;
             this.numberOfTickets = numberOfTickets;
         }
 
-        public int compareTo(Object o) {
+        public int compareTo (Object o) {
             return new Long(numberOfTickets).compareTo(((LotteryNumberOfTickets) o).numberOfTickets);
         }
     }
 
     private class Rule implements Comparable {
-        private Rule(String name, int choices, int blanks, boolean sorted, boolean unique) {
+        private Rule (String name, int choices, int blanks, boolean sorted, boolean unique) {
             this.name = name;
             this.choices = choices;
             this.blanks = blanks;
@@ -66,20 +67,13 @@ public class Lottery {
         public boolean sorted;
         public boolean unique;
 
-        public int compareTo(Object o) {
+        public int compareTo (Object o) {
             return name.compareTo(((Rule) o).name);
         }
     }
 
-
-    /**
-     * Rules:
-     * TT : n choose k
-     * FT: (n choose k) k!
-     * TF: (n+k-1) choose k
-     * FF: choices^blanks
-     */
-    private long numberOfTickets(Rule rule) {
+    /** Rules: TT : n choose k FT: (n choose k) k! TF: (n+k-1) choose k FF: choices^blanks */
+    private long numberOfTickets (Rule rule) {
 
         if (rule.sorted && rule.unique) {
             return choose(rule.choices, rule.blanks);
@@ -92,16 +86,16 @@ public class Lottery {
         }
     }
 
-    private long fac(int n) {
-        if (n == 1) return 1;
+    private long fac (int n) {
+        if (n == 1) { return 1; }
         return n * fac(n - 1);
     }
 
-    private long choose(int n, int k) {
+    private long choose (int n, int k) {
         return pascalTriangle[n][k];
     }
 
-    private long[][] createPascalTriangle(int n) {
+    private long[][] createPascalTriangle (int n) {
         long[][] triangle = new long[n][];
         for (int i = 0; i < n; i++) {
             triangle[i] = new long[i + 1];

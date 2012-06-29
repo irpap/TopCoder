@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
+/** SRM 144 */
 public class PenLift {
     static ArrayList<Point> points;
 
-    public int numTimes(String[] segments, int n) {
+    public int numTimes (String[] segments, int n) {
         ArrayList<Segment> segs = new ArrayList<Segment>();
         for (int i = 0; i < segments.length; i++) {
             String str[] = segments[i].split(" ");
@@ -77,7 +78,7 @@ public class PenLift {
         return count - 1;
     }
 
-    static int DFS(int index) {
+    static int DFS (int index) {
         Point point = points.get(index);
         int odd;
         if (point.adjacents.size() % 2 == 0) {
@@ -102,7 +103,7 @@ public class PenLift {
         int y2;
         boolean horizontal;
 
-        Segment(int x1, int y1, int x2, int y2) {
+        Segment (int x1, int y1, int x2, int y2) {
             this.x1 = x1;
             this.y1 = y1;
             this.x2 = x2;
@@ -114,7 +115,7 @@ public class PenLift {
             }
         }
 
-        static boolean isOverlap(Segment a, Segment b) {
+        static boolean isOverlap (Segment a, Segment b) {
             if (a.horizontal == true && b.horizontal == true && a.y1 == b.y1) {
                 if ((a.x1 >= b.x1 && a.x1 <= b.x2) || (a.x2 >= b.x1 && a.x2 <= b.x2) || (b.x1 >= a.x1 && b.x1 <= a.x2) || (b.x2 >= a.x1 && b.x2 <= a.x2)) {
                     return true;
@@ -127,7 +128,7 @@ public class PenLift {
             return false;
         }
 
-        static Segment combine(Segment a, Segment b) {
+        static Segment combine (Segment a, Segment b) {
             if (a.horizontal == true && b.horizontal == true) {
                 int x1 = Math.min(a.x1, b.x1);
                 int x2 = Math.max(a.x2, b.x2);
@@ -141,7 +142,7 @@ public class PenLift {
             }
         }
 
-        static Point intersect(Segment a, Segment b) {
+        static Point intersect (Segment a, Segment b) {
             if (a.horizontal == b.horizontal) {
                 return null;
             }
@@ -163,14 +164,14 @@ public class PenLift {
         ArrayList<Integer> adjacents;
         boolean visited;
 
-        public Point(int X, int Y) {
+        public Point (int X, int Y) {
             this.x = X;
             this.y = Y;
             this.adjacents = new ArrayList<Integer>();
             this.visited = false;
         }
 
-        public boolean equals(Object obj) {
+        public boolean equals (Object obj) {
             Point another = (Point) obj;
             if (this.x == another.x && this.y == another.y) {
                 return true;
@@ -179,7 +180,7 @@ public class PenLift {
             }
         }
 
-        public int compareTo(Point another) {
+        public int compareTo (Point another) {
             if (this.x != another.x) {
                 return this.x - another.x;
             } else {
