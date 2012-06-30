@@ -15,9 +15,12 @@ public class FavouriteDigits {
         Collections.reverse(characters);
 
         Character next = needToAdd.poll();
-        int startFrom = 0;
+        boolean increased = false;
         while (next != null) {
-            startFrom = replace(digit1, digit2, characters, next, startFrom);
+            final boolean result = replace(digit1, digit2, characters, next, increased);
+            if (result) increased = true;
+
+
             next = needToAdd.poll();
         }
 
@@ -27,10 +30,16 @@ public class FavouriteDigits {
 
     }
 
-    private ArrayList<Character> toList(String number) {
-        final ArrayList<Character> characters = new ArrayList<Character>();
-        for (char c : number.toCharArray()) characters.add(c);
-        return characters;
+    private boolean replace(int digit1, int digit2, ArrayList<Character> chars, char nextToInsert, boolean increased) {
+        for (int i = 0; i < chars.size(); i++) {
+            final char c = chars.get(i);
+            if ((increased || c < nextToInsert) && c != toChar(digit1) && c != toChar(digit2)) {
+                chars.set(i, nextToInsert);
+                return false;
+            }
+        }
+        chars.add(nextToInsert);
+        return true;
     }
 
     private LinkedList<Character> digitsToAdd(int digit1, int count1, int digit2, int count2, String number) {
@@ -47,6 +56,17 @@ public class FavouriteDigits {
         return needToAdd;
     }
 
+    private ArrayList<Character> toList(String number) {
+        final ArrayList<Character> characters = new ArrayList<Character>();
+        for (char c : number.toCharArray()) characters.add(c);
+        return characters;
+    }
+
+
+    private char toChar(int digit1) {
+        return (char) (digit1 + '0');
+    }
+
     private long toLong(ArrayList<Character> characters) {
         final StringBuilder builder = new StringBuilder(characters.size());
         for (Character character : characters) {
@@ -54,22 +74,5 @@ public class FavouriteDigits {
         }
         final String stringResult = builder.toString();
         return Long.parseLong(stringResult);
-    }
-
-
-    private int replace(int digit1, int digit2, ArrayList<Character> chars, char nextToInsert, int startIndex) {
-        for (int i = startIndex; i < chars.size(); i++) {
-            final char c = chars.get(i);
-            if (c < nextToInsert && c != toChar(digit1) && c != toChar(digit2)) {
-                chars.set(i, nextToInsert);
-                return i;
-            }
-        }
-        chars.add(nextToInsert);
-        return chars.size() - 1;
-    }
-
-    private char toChar(int digit1) {
-        return (char) (digit1 + '0');
     }
 }
