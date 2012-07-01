@@ -32,24 +32,39 @@ public class CMajor {
             }
             DP[i] = lengthsForWhite;
         }
+        final int[][] melodyLengths = deepCopy(DP);
 
-        for (int i = 1; i < DP.length; i++) {
-            for (int j = 0; j < DP[i].length; j++) {
-                int prevFragmentLength = DP[i - 1][j];
-                DP[i][j] = (prevFragmentLength == 0) ? 0 : prevFragmentLength + DP[i][j];
+        for (int i = 1; i < melodyLengths.length; i++) {
+            for (int j = 0; j < melodyLengths[i].length; j++) {
+                int prevFragmentLength = melodyLengths[i - 1][j];
+                melodyLengths[i][j] = prevFragmentLength + melodyLengths[i][j];
             }
         }
         //find max Element the last row, and trace back the number of non zeros.
-        return numberOfFragmentsInMaxMelody(DP);
+        return numberOfFragmentsInMaxMelody(DP, melodyLengths);
     }
 
-    private int numberOfFragmentsInMaxMelody(int[][] dp) {
-        int max = dp[dp.length - 1][0];
-        int maxIndex = 0;
-        for (int i = 0; i < dp[dp.length - 1].length; i++) {
-            if (dp[dp.length - 1][i] > max) maxIndex = i;
+    private int[][] deepCopy(int[][] DP) {
+        int[][] melodyLenghts = new int[DP.length][WHITE_KEYS.length];
+        for (int i = 0; i < DP.length; i++) {
+            for (int j = 0; j < DP[i].length; j++) {
+                melodyLenghts[i][j] = DP[i][j];
+            }
         }
-        int countNoZeros = 1;
+        return melodyLenghts;
+    }
+
+    private int numberOfFragmentsInMaxMelody(int[][] dp, int[][] melodyLengths) {
+        int max = melodyLengths[melodyLengths.length - 1][0];
+        int maxIndex = 0;
+        for (int i = 0; i < melodyLengths[melodyLengths.length - 1].length; i++) {
+            if (melodyLengths[melodyLengths.length - 1][i] > max) {
+                max = melodyLengths[melodyLengths.length - 1][i];
+                maxIndex = i;
+            }
+        }
+
+        int countNoZeros = 0;
         for (int i = 0; i < dp.length; i++) {
             if (dp[i][maxIndex] != 0) countNoZeros++;
         }
@@ -57,7 +72,7 @@ public class CMajor {
     }
 
     private int keysInFragment(String fragment) {
-        return fragment.length() - fragment.replaceAll(" ", "").length();
+        return fragment.length() - fragment.replaceAll(" ", "").length() + 1;
     }
 
     private boolean isValidStart(char c, String fragment) {
