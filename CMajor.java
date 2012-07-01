@@ -18,7 +18,7 @@ public class CMajor {
             false/*black*/};
 
     int[] keyIndex = {
-            0, 2, 3, 5, 6, 7, 9
+            0, 2, 3, 5, 7, 8, 10
     };
 
 
@@ -28,7 +28,7 @@ public class CMajor {
         for (int i = 0; i < fragments.length; i++) {
             int[] lengthsForWhite = new int[WHITE_KEYS.length];
             for (int j = 0; j < WHITE_KEYS.length; j++) {
-                lengthsForWhite[j] = isValidStart(WHITE_KEYS[j], fragments[i]) ? fragments[i].length() : 0;
+                lengthsForWhite[j] = isValidStart(WHITE_KEYS[j], fragments[i]) ? keysInFragment(fragments[i]) : 0;
             }
             DP[i] = lengthsForWhite;
         }
@@ -43,6 +43,10 @@ public class CMajor {
         return maxElement(DP[DP.length - 1]);
 
 
+    }
+
+    private int keysInFragment(String fragment) {
+        return fragment.length() - fragment.replaceAll(" ", "").length();
     }
 
     private int maxElement(int[] array) {
