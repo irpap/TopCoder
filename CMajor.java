@@ -39,22 +39,25 @@ public class CMajor {
                 DP[i][j] = (prevFragmentLength == 0) ? 0 : prevFragmentLength + DP[i][j];
             }
         }
+        //find max Element the last row, and trace back the number of non zeros.
+        return numberOfFragmentsInMaxMelody(DP);
+    }
 
-        return maxElement(DP[DP.length - 1]);
-
-
+    private int numberOfFragmentsInMaxMelody(int[][] dp) {
+        int max = dp[dp.length - 1][0];
+        int maxIndex = 0;
+        for (int i = 0; i < dp[dp.length - 1].length; i++) {
+            if (dp[dp.length - 1][i] > max) maxIndex = i;
+        }
+        int countNoZeros = 1;
+        for (int i = 0; i < dp.length; i++) {
+            if (dp[i][maxIndex] != 0) countNoZeros++;
+        }
+        return countNoZeros;
     }
 
     private int keysInFragment(String fragment) {
         return fragment.length() - fragment.replaceAll(" ", "").length();
-    }
-
-    private int maxElement(int[] array) {
-        int max = array[0];
-        for (int n : array) {
-            if (n > max) max = n;
-        }
-        return max;
     }
 
     private boolean isValidStart(char c, String fragment) {
