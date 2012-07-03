@@ -26,26 +26,27 @@ public class CMajor {
 
     public void startWithEveryWhiteKey(LinkedList<String> fragments) {
         for (char whiteKey : WHITE_KEYS) {
-            final int len = longestMelodyLength(fragments, whiteKey);
-            System.out.println(whiteKey + ": " + len);
+            final LengthFragmentCount lengthFragmentCount = longestMelodyLength(fragments, whiteKey, 1);
+            System.out.println(whiteKey + ": " + lengthFragmentCount.length + "  #fragments: " + lengthFragmentCount.fragmentCount);
         }
 
     }
 
-    public int longestMelodyLength(LinkedList<String> fragments, char startingKey) {
-        //try to include and to not include, return biggest
-        if (fragments.isEmpty()) return 0;
-        if (startingKey == INVALID) return 0;
+    public LengthFragmentCount longestMelodyLength(LinkedList<String> fragments, char startingKey, int fragmentCount) {
+        if (fragments.isEmpty()) return new LengthFragmentCount(0, fragmentCount);
+        if (startingKey == INVALID) return new LengthFragmentCount(0, fragmentCount);
 
         //include the first fragment
         final String head = fragments.pollFirst();
         final char endPoint = endOfFragment(startingKey, head);
-        int lengthIncluding = keysInFragment(head) + longestMelodyLength(fragments, endPoint);
-
+        final LengthFragmentCount restLength = longestMelodyLength(fragments, endPoint, fragmentCount + 1);
+        LengthFragmentCount lengthIncluding = new LengthFragmentCount(restLength.length + keysInFragment(head), restLength.fragmentCount);
         //don't include the first fragment
-        int lengthExcluding = longestMelodyLength(fragments, startingKey);
+        final LengthFragmentCount lengthExcluding = longestMelodyLength(fragments, startingKey, fragmentCount);
+
+        //put it back so that we don't destroy the collection for the next person
         fragments.addFirst(head);
-        return Math.max(lengthIncluding, lengthExcluding);
+        return lengthIncluding.length > lengthExcluding.length ? lengthIncluding : lengthExcluding;
     }
 
     private int keysInFragment(String fragment) {
@@ -56,22 +57,17 @@ public class CMajor {
      * If this fragment can be played with this starting key, it returns the end key. If any black key is encountered returns INVALID.
      */
     private char endOfFragment(char c, String fragment) {
-//        System.out.println("starting char: " + c);
         int start = keyIndex[c - 'A'];
         final String[] jumps = fragment.split(" ");
         for (String j : jumps) {
             int jump = Integer.parseInt(j);
             int next = (Math.abs(start + jump)) % ALL_KEYS.length;
             if (!ALL_KEYS[next]) {
-//                System.out.println("returning INVALID");
                 return INVALID;
             }
             start = next;
         }
-        char result = ALL_KEYS[start] ? whiteKeyForIndex(start) : INVALID;
-
-//        System.out.println("returning: " + result);
-        return result;
+        return ALL_KEYS[start] ? whiteKeyForIndex(start) : INVALID;
 
     }
 
@@ -80,5 +76,15 @@ public class CMajor {
             if (whiteKey == keyIndex[i]) return (char) (i + 'A');
         }
         return INVALID;
+    }
+
+    private static class LengthFragmentCount {
+        private LengthFragmentCount(int length, int fragmentCount) {
+            this.length = length;
+            this.fragmentCount = fragmentCount;
+        }
+
+        int length;
+        int fragmentCount;
     }
 }
