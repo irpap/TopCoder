@@ -24,7 +24,7 @@ public class CMajor {
     };
     private static final char INVALID = (char) -1;
 
-    private static HashMap<String, HashMap<Character, LengthFragmentCount>> lengthsMemo = new HashMap();
+    private static HashMap<String, HashMap<Character, LengthFragmentCount>> lengthsMemo = new HashMap<String, HashMap<Character, LengthFragmentCount>>();
 
     public int getLongest(String[] fragments) {
         initialiseMap(fragments);
@@ -41,17 +41,6 @@ public class CMajor {
 
     }
 
-    private void initialiseMap(String[] fragments) {
-        for (String fragment : fragments) {
-            for (char whiteKey : WHITE_KEYS) {
-                final HashMap<Character, LengthFragmentCount> valueMap = new HashMap<Character, LengthFragmentCount>();
-                valueMap.put(whiteKey, new LengthFragmentCount(0, 0));
-                lengthsMemo.put(fragment, valueMap);
-            }
-
-        }
-    }
-
     public LengthFragmentCount longestMelodyLength(LinkedList<String> fragments, char startingKey, int fragmentCount) {
         if (fragments.isEmpty()) return new LengthFragmentCount(0, fragmentCount);
         if (startingKey == INVALID) return new LengthFragmentCount(0, fragmentCount);
@@ -61,7 +50,6 @@ public class CMajor {
         final char endPoint = endOfFragment(startingKey, head);
         LengthFragmentCount lengthIncluding = new LengthFragmentCount(0, 0);
         if (endPoint != INVALID) {
-//            System.out.println("start: " + startingKey + " end: " + endPoint);
             final LengthFragmentCount found = lengthsMemo.get(head).get(endPoint);
             if (found != null && found.length != 0) {
                 lengthIncluding = new LengthFragmentCount(found.length + keysInFragment(head), found.fragmentCount + 1);
@@ -85,11 +73,6 @@ public class CMajor {
         fragments.addFirst(head);
 
         return lengthIncluding.length > lengthExcluding.length ? lengthIncluding : lengthExcluding;
-    }
-
-    private void saveToMemo(char startingKey, String head, LengthFragmentCount restLength) {
-        final HashMap<Character, LengthFragmentCount> mapToSaveTo = lengthsMemo.get(head);
-        mapToSaveTo.put(startingKey, restLength);
     }
 
     private int keysInFragment(String fragment) {
@@ -119,6 +102,22 @@ public class CMajor {
             if (whiteKey == keyIndex[i]) return (char) (i + 'A');
         }
         return INVALID;
+    }
+
+    private void saveToMemo(char startingKey, String head, LengthFragmentCount restLength) {
+        final HashMap<Character, LengthFragmentCount> mapToSaveTo = lengthsMemo.get(head);
+        mapToSaveTo.put(startingKey, restLength);
+    }
+
+    private void initialiseMap(String[] fragments) {
+        for (String fragment : fragments) {
+            for (char whiteKey : WHITE_KEYS) {
+                final HashMap<Character, LengthFragmentCount> valueMap = new HashMap<Character, LengthFragmentCount>();
+                valueMap.put(whiteKey, new LengthFragmentCount(0, 0));
+                lengthsMemo.put(fragment, valueMap);
+            }
+
+        }
     }
 
     private static class LengthFragmentCount implements Comparable {
