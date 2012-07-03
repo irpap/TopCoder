@@ -1,4 +1,4 @@
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * SRM 289 DIV 1
@@ -24,11 +24,17 @@ public class CMajor {
     };
     private static final char INVALID = (char) -1;
 
-    public void startWithEveryWhiteKey(LinkedList<String> fragments) {
+    public int getLongest(String[] fragments) {
+        final LinkedList<String> fragmentList = new LinkedList<String>(Arrays.asList(fragments));
+        final ArrayList<LengthFragmentCount> lengthFragmentCounts = new ArrayList<LengthFragmentCount>();
         for (char whiteKey : WHITE_KEYS) {
-            final LengthFragmentCount lengthFragmentCount = longestMelodyLength(fragments, whiteKey, 1);
+            final LengthFragmentCount lengthFragmentCount = longestMelodyLength(fragmentList, whiteKey, 0);
+            lengthFragmentCounts.add(lengthFragmentCount);
             System.out.println(whiteKey + ": " + lengthFragmentCount.length + "  #fragments: " + lengthFragmentCount.fragmentCount);
         }
+
+        final LengthFragmentCount longest = Collections.max(lengthFragmentCounts);
+        return longest.fragmentCount;
 
     }
 
@@ -37,14 +43,14 @@ public class CMajor {
         if (startingKey == INVALID) return new LengthFragmentCount(0, fragmentCount);
 
         //include the first fragment
-        final String head = fragments.pollFirst();
+        final String head = fragments.removeFirst();
         final char endPoint = endOfFragment(startingKey, head);
         final LengthFragmentCount restLength = longestMelodyLength(fragments, endPoint, fragmentCount + 1);
         LengthFragmentCount lengthIncluding = new LengthFragmentCount(restLength.length + keysInFragment(head), restLength.fragmentCount);
         //don't include the first fragment
         final LengthFragmentCount lengthExcluding = longestMelodyLength(fragments, startingKey, fragmentCount);
 
-        //put it back so that we don't destroy the collection for the next person
+        //put the head back so that we don't destroy the collection for the next person
         fragments.addFirst(head);
         return lengthIncluding.length > lengthExcluding.length ? lengthIncluding : lengthExcluding;
     }
@@ -78,7 +84,7 @@ public class CMajor {
         return INVALID;
     }
 
-    private static class LengthFragmentCount {
+    private static class LengthFragmentCount implements Comparable {
         private LengthFragmentCount(int length, int fragmentCount) {
             this.length = length;
             this.fragmentCount = fragmentCount;
@@ -86,5 +92,9 @@ public class CMajor {
 
         int length;
         int fragmentCount;
+
+        public int compareTo(Object another) {
+            return this.length - ((LengthFragmentCount) (another)).length;
+        }
     }
 }
