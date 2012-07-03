@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * SRM 289 DIV 1
@@ -45,13 +48,19 @@ public class CMajor {
         //include the first fragment
         final String head = fragments.removeFirst();
         final char endPoint = endOfFragment(startingKey, head);
-        final LengthFragmentCount restLength = longestMelodyLength(fragments, endPoint, fragmentCount + 1);
-        LengthFragmentCount lengthIncluding = new LengthFragmentCount(restLength.length + keysInFragment(head), restLength.fragmentCount);
+        LengthFragmentCount lengthIncluding = new LengthFragmentCount(0, 0);
+        if (endPoint != INVALID) {
+            System.out.println("start: " + startingKey + " end: " + endPoint);
+            final LengthFragmentCount restLength = longestMelodyLength(fragments, endPoint, fragmentCount + 1);
+            lengthIncluding = new LengthFragmentCount(restLength.length + keysInFragment(head), restLength.fragmentCount);
+        }
+
         //don't include the first fragment
         final LengthFragmentCount lengthExcluding = longestMelodyLength(fragments, startingKey, fragmentCount);
 
         //put the head back so that we don't destroy the collection for the next person
         fragments.addFirst(head);
+
         return lengthIncluding.length > lengthExcluding.length ? lengthIncluding : lengthExcluding;
     }
 
