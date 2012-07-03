@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * SRM 289 DIV 1
@@ -27,7 +24,10 @@ public class CMajor {
     };
     private static final char INVALID = (char) -1;
 
+    private static HashMap<String, HashMap<Character, LengthFragmentCount>> lengthsMemo = new HashMap();
+
     public int getLongest(String[] fragments) {
+        initialiseMap(fragments);
         final LinkedList<String> fragmentList = new LinkedList<String>(Arrays.asList(fragments));
         final ArrayList<LengthFragmentCount> lengthFragmentCounts = new ArrayList<LengthFragmentCount>();
         for (char whiteKey : WHITE_KEYS) {
@@ -41,6 +41,17 @@ public class CMajor {
 
     }
 
+    private void initialiseMap(String[] fragments) {
+        for (String fragment : fragments) {
+            for (char whiteKey : WHITE_KEYS) {
+                final HashMap<Character, LengthFragmentCount> valueMap = new HashMap<Character, LengthFragmentCount>();
+                valueMap.put(whiteKey, new LengthFragmentCount(0, 0));
+                lengthsMemo.put(fragment, valueMap);
+            }
+
+        }
+    }
+
     public LengthFragmentCount longestMelodyLength(LinkedList<String> fragments, char startingKey, int fragmentCount) {
         if (fragments.isEmpty()) return new LengthFragmentCount(0, fragmentCount);
         if (startingKey == INVALID) return new LengthFragmentCount(0, fragmentCount);
@@ -50,18 +61,35 @@ public class CMajor {
         final char endPoint = endOfFragment(startingKey, head);
         LengthFragmentCount lengthIncluding = new LengthFragmentCount(0, 0);
         if (endPoint != INVALID) {
-            System.out.println("start: " + startingKey + " end: " + endPoint);
-            final LengthFragmentCount restLength = longestMelodyLength(fragments, endPoint, fragmentCount + 1);
-            lengthIncluding = new LengthFragmentCount(restLength.length + keysInFragment(head), restLength.fragmentCount);
+//            System.out.println("start: " + startingKey + " end: " + endPoint);
+            final LengthFragmentCount found = lengthsMemo.get(head).get(endPoint);
+            if (found != null && found.length != 0) {
+                lengthIncluding = new LengthFragmentCount(found.length + keysInFragment(head), found.fragmentCount + 1);
+            } else {
+                final LengthFragmentCount restLength = longestMelodyLength(fragments, endPoint, fragmentCount + 1);
+                saveToMemo(startingKey, head, restLength);
+                lengthIncluding = new LengthFragmentCount(restLength.length + keysInFragment(head), restLength.fragmentCount);
+            }
         }
 
         //don't include the first fragment
-        final LengthFragmentCount lengthExcluding = longestMelodyLength(fragments, startingKey, fragmentCount);
-
+        LengthFragmentCount lengthExcluding = new LengthFragmentCount(0, 0);
+        final LengthFragmentCount found = lengthsMemo.get(head).get(startingKey);
+        if (found != null && found.length != 0) {
+            lengthExcluding = found;
+        } else {
+            lengthExcluding = longestMelodyLength(fragments, startingKey, fragmentCount);
+            saveToMemo(startingKey, head, lengthExcluding);
+        }
         //put the head back so that we don't destroy the collection for the next person
         fragments.addFirst(head);
 
         return lengthIncluding.length > lengthExcluding.length ? lengthIncluding : lengthExcluding;
+    }
+
+    private void saveToMemo(char startingKey, String head, LengthFragmentCount restLength) {
+        final HashMap<Character, LengthFragmentCount> mapToSaveTo = lengthsMemo.get(head);
+        mapToSaveTo.put(startingKey, restLength);
     }
 
     private int keysInFragment(String fragment) {
