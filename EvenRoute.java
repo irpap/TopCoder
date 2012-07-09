@@ -1,3 +1,6 @@
+    /**
+     * SRM 538 DIV I
+     */
 public class EvenRoute {
     /**
      * We don't need to calculate the path, just to verify its existence. We know that it always starts at (0,0) and it must end at one of the points. So we just need to verify the parity from (0,0) to any of the other points. This works because The parity of the distance from point a to point b is independent of the path taken as there can't be diagonal steps
