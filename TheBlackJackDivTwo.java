@@ -1,22 +1,13 @@
-/*
- * -----------------------------------------------------------------------
- *
- * QATARLYST LIMITED
- *
- * -----------------------------------------------------------------------
- *
- * (C) Copyright 2012 Qatarlyst Limited. All rights reserved.
- *
- * NOTICE:  All information contained herein or attendant hereto is,
- *          and remains, the property of Qatarlyst Limited.  Many of the
- *          intellectual and technical concepts contained herein are
- *          proprietary to Qatarlyst Limited. Any dissemination of this
- *          information or reproduction of this material is strictly
- *          forbidden unless prior written permission is obtained
- *          from Qatarlyst Limited.
- *
- * -----------------------------------------------------------------------
- */
-
 public class TheBlackJackDivTwo {
+
+    public int score (String[] cards) {
+        int score = 0;
+        for (String card : cards) {
+            char c = card.charAt(0);
+            if (c >= '2' && c <= '9') { score += c - '0'; } else if (c == 'T' || c == 'J' || c == 'Q' || c == 'K') {
+                score += 10;
+            } else if (c == 'A') { score += 11; }
+        }
+        return score;
+    }
 }

@@ -1,22 +1,28 @@
-/*
- * -----------------------------------------------------------------------
- *
- * QATARLYST LIMITED
- *
- * -----------------------------------------------------------------------
- *
- * (C) Copyright 2012 Qatarlyst Limited. All rights reserved.
- *
- * NOTICE:  All information contained herein or attendant hereto is,
- *          and remains, the property of Qatarlyst Limited.  Many of the
- *          intellectual and technical concepts contained herein are
- *          proprietary to Qatarlyst Limited. Any dissemination of this
- *          information or reproduction of this material is strictly
- *          forbidden unless prior written permission is obtained
- *          from Qatarlyst Limited.
- *
- * -----------------------------------------------------------------------
- */
+import java.util.LinkedList;
 
 public class TheCardShufflingDivTwo {
+
+    LinkedList<Integer> left = new LinkedList<Integer>();
+    LinkedList<Integer> main = new LinkedList<Integer>();
+    LinkedList<Integer> right = new LinkedList<Integer>();
+
+    public int shuffle (int n, int m) {
+        for (int i = 1; i <= n; i++) { main.add(i); }
+        for (int i = 0; i < m; i++) {
+            //step 1
+            while (!main.isEmpty()) {
+                left.addFirst(main.removeFirst());
+                if (!main.isEmpty()) { right.addFirst(main.removeFirst()); }
+            }
+            //step 2
+            while (!left.isEmpty()) {
+                main.addFirst(left.removeFirst());
+            }
+            //step 3
+            while (!right.isEmpty()) {
+                main.addFirst(right.removeFirst());
+            }
+        }
+        return main.getFirst();
+    }
 }
