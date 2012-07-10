@@ -72,7 +72,11 @@ public class Lottery {
         }
     }
 
-    /** Rules: TT : n choose k FT: (n choose k) k! TF: (n+k-1) choose k FF: choices^blanks */
+    /** Rules:
+     * TT : n choose k
+     * FT: (n choose k) k!
+     * TF: (n+k-1) choose k
+     * FF: choices^blanks */
     private long numberOfTickets (Rule rule) {
 
         if (rule.sorted && rule.unique) {
