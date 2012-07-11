@@ -1,9 +1,25 @@
+import java.util.HashMap;
+
 /**
- * Created with IntelliJ IDEA.
- * User: user
- * Date: 10/07/12
- * Time: 13:24
- * To change this template use File | Settings | File Templates.
+ * SRM 546 DIV 2
  */
 public class ContestWinner {
+    public int getWinner(int[] events) {
+        int winner = events[0];
+        int winningCount = 1;
+        HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
+
+        for (int e : events) {
+            if (!count.containsKey(e)) count.put(e, 1);
+            else {
+                int newCount = count.get(e) + 1;
+                count.put(e, newCount);
+                if (newCount > winningCount) {
+                    winner = e;
+                    winningCount = newCount;
+                }
+            }
+        }
+        return winner;
+    }
 }
