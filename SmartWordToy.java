@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,25 +10,24 @@ public class SmartWordToy {
     public int minPresses(String start, String finish, String[] forbid) {
         Node.forbid = forbid;
         Node s = new Node(start.toCharArray());
-        System.out.println(s.neighbors());
         return bfs(s, finish);
     }
 
     private int bfs(Node s, String finish) {
         HashSet<String> visited = new HashSet<String>();
 
-        int steps = 0;
         LinkedList<Node> q = new LinkedList<Node>();
         q.add(s);
         while (q.isEmpty() == false) {
             Node top = q.getFirst();
-//            System.out.println(top);
             q.removeFirst();
             visited.add(top.toString());
-            steps++;
-            if (top.toString().equals(finish)) return steps;
+            if (top.toString().equals(finish)) return top.steps;
             for (Node neighbor : top.neighbors()) {
-                if (!visited.contains(neighbor.toString())) q.add(neighbor);
+                if (!visited.contains(neighbor.toString())) {
+                    neighbor.steps = top.steps + 1;
+                    q.add(neighbor);
+                }
             }
         }
         return -1;
@@ -37,6 +35,7 @@ public class SmartWordToy {
 
     static class Node {
         static String[] forbid;
+        int steps = 0;
 
         Node(char[] word) {
             this.word = word;
@@ -58,9 +57,7 @@ public class SmartWordToy {
                 for (int j = 0; j < word.length; j++) {
                     prev[j] = (i == j) ? prev(word[j]) : word[j];
                 }
-//                System.out.println("considering neighbor " + new String(prev) + "");
                 if (forbidden(prev, forbid) == false) {
-//                    System.out.println("adding neighbor " + new String(prev) + "");
                     neighbors.add(new Node(prev));
                 }
             }
@@ -71,10 +68,8 @@ public class SmartWordToy {
                 for (int j = 0; j < word.length; j++) {
                     next[j] = (i == j) ? next(word[j]) : word[j];
                 }
-//                System.out.println("considering neighbor " + new String(next) + "");
 
                 if (forbidden(next, forbid) == false) {
-//                    System.out.println("addng neighbor " + new String(next) + "");
                     neighbors.add(new Node(next));
                 }
 
@@ -101,24 +96,6 @@ public class SmartWordToy {
         private char prev(char c) {
             if (c == 'a') return 'z';
             return (char) (c - 1);
-        }
-
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Node node = (Node) o;
-
-            if (!Arrays.equals(word, node.word)) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return word != null ? Arrays.hashCode(word) : 0;
         }
     }
 }
