@@ -8,8 +8,9 @@ import java.util.List;
  */
 public class SmartWordToy {
     public int minPresses(String start, String finish, String[] forbid) {
-        Node.forbid = forbid;
+        Node.initForbidden(forbid);
         Node s = new Node(start.toCharArray());
+//        System.out.println(s.neighbors());
         return bfs(s, finish);
     }
 
@@ -21,6 +22,7 @@ public class SmartWordToy {
         while (q.isEmpty() == false) {
             Node top = q.getFirst();
             q.removeFirst();
+//            System.out.println(top);
             visited.add(top.toString());
             if (top.toString().equals(finish)) return top.steps;
             for (Node neighbor : top.neighbors()) {
@@ -34,8 +36,29 @@ public class SmartWordToy {
     }
 
     static class Node {
-        static String[] forbid;
+        public static final char A = 'a';
         int steps = 0;
+        static boolean[][][][] forbidden;
+
+        private static void initForbidden(final String[] forbid) {
+            boolean[][][][] forbidden = new boolean[26][26][26][26];
+
+            for (String s : forbid) {
+                String[] split = s.split(" ");
+                for (int i = 0; i < split[0].length(); i++) {
+                    for (int j = 0; j < split[1].length(); j++) {
+                        for (int k = 0; k < split[2].length(); k++) {
+                            for (int l = 0; l < split[3].length(); l++) {
+                                forbidden[split[0].charAt(i) - A][split[1].charAt(j) - A][split[2].charAt(k) - A][split[3].charAt(l) - A] = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            Node.forbidden = forbidden;
+        }
 
         Node(char[] word) {
             this.word = word;
@@ -48,45 +71,50 @@ public class SmartWordToy {
         }
 
         List<Node> neighbors() {
-
             HashSet<Node> neighbors = new HashSet<Node>();
 
             for (int i = 0; i < word.length; i++) {
-                char[] prev = new char[4];
-
-                for (int j = 0; j < word.length; j++) {
-                    prev[j] = (i == j) ? prev(word[j]) : word[j];
-                }
-                if (forbidden(prev, forbid) == false) {
-                    neighbors.add(new Node(prev));
-                }
+                char[] prev = createWordWithNextLetter(i);
+                addToNeighborsIfNotForbidden(neighbors, prev);
             }
 
             for (int i = 0; i < word.length; i++) {
-                char[] next = new char[4];
+                char[] next = createWordWithPrevLetter(i);
 
-                for (int j = 0; j < word.length; j++) {
-                    next[j] = (i == j) ? next(word[j]) : word[j];
-                }
-
-                if (forbidden(next, forbid) == false) {
-                    neighbors.add(new Node(next));
-                }
-
+                addToNeighborsIfNotForbidden(neighbors, next);
             }
 
             return new LinkedList(neighbors);
         }
 
-        private boolean forbidden(char[] word, String[] forbid) {
-            for (String constraint : forbid) {
-                String[] constraints = constraint.split(" ");
-                if (constraints[0].contains(word[0] + "") && constraints[1].contains(word[1] + "") && constraints[2].contains(word[2] + "") && constraints[3].contains(word[3] + ""))
-                    return true;
-
+        private void addToNeighborsIfNotForbidden(HashSet<Node> neighbors, char[] next) {
+            if (isForbidden(next) == false) {
+                neighbors.add(new Node(next));
             }
-            return false;
         }
+
+        private char[] createWordWithPrevLetter(int i) {
+            char[] next = new char[4];
+
+            for (int j = 0; j < word.length; j++) {
+                next[j] = (i == j) ? next(word[j]) : word[j];
+            }
+            return next;
+        }
+
+        private char[] createWordWithNextLetter(int i) {
+            char[] prev = new char[4];
+
+            for (int j = 0; j < word.length; j++) {
+                prev[j] = (i == j) ? prev(word[j]) : word[j];
+            }
+            return prev;
+        }
+
+        private boolean isForbidden(char[] word) {
+            return forbidden[word[0] - A][word[1] - A][word[2] - A][word[3] - A];
+        }
+
 
         private char next(char c) {
             if (c == 'z') return 'a';
