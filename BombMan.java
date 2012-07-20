@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * TCCC '04 Round 4 - 500
@@ -11,13 +14,11 @@ public class BombMan {
     private int[][] timeSpent;
     private int[][] state;
     private int[][] bombsLeft;
-    private Point[][] parent;
 
     public int shortestPath(String[] maze, int bombs) {
         m = new char[maze.length][maze[0].length()];
         state = new int[maze.length][maze[0].length()];
         bombsLeft = new int[maze.length][maze[0].length()];
-        parent = new Point[maze.length][maze[0].length()];
         timeSpent = new int[maze.length][maze[0].length()];
         for (int i = 0; i < maze.length; i++) {
             for (int j = 0; j < maze[i].length(); j++) {
@@ -43,7 +44,6 @@ public class BombMan {
             int topDistance = timeSpent[top.p.i][top.p.j];
             if (isExit(top)) return topDistance;
             for (Point neighbor : neighboringPoints(top.p)) {
-                parent[neighbor.i][neighbor.j] = top.p;
                 System.out.println("\tcoming from  (" + top.p.i + ", " + top.p.j + ") visiting (" + neighbor.i + "," + neighbor.j + ")");
                 if (state[neighbor.i][neighbor.j] == UNDISCOVERED) {
                     state[neighbor.i][neighbor.j] = DISCOVERED;
