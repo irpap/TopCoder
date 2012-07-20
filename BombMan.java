@@ -6,21 +6,17 @@ import java.util.*;
 public class BombMan {
     private static int UNDISCOVERED = 0;
     private static int DISCOVERED = 1;
-    private static int FULLY_EXPLORED = 2;
 
     private char[][] m;
     private int[][] timeSpent;
     private int[][] state;
-    private boolean[][] bombed;
     private int[][] bombsLeft;
     private Point[][] parent;
 
     public int shortestPath(String[] maze, int bombs) {
         m = new char[maze.length][maze[0].length()];
-        bombed = new boolean[maze.length][maze[0].length()];
         state = new int[maze.length][maze[0].length()];
         bombsLeft = new int[maze.length][maze[0].length()];
-        for (int[] row : bombsLeft) Arrays.fill(row, bombs);
         parent = new Point[maze.length][maze[0].length()];
         timeSpent = new int[maze.length][maze[0].length()];
         for (int i = 0; i < maze.length; i++) {
@@ -43,7 +39,7 @@ public class BombMan {
         while (!q.isEmpty()) {
             Node top = q.poll();
             System.out.print("\nvisiting (" + top.p.i + "," + top.p.j + ")" + m[top.p.i][top.p.j]);
-            System.out.println(" time passed: " + timeSpent[top.p.i][top.p.j] + ", bombs left: " + bombsLeft[start.i][start.j]);
+            System.out.println(" time passed: " + timeSpent[top.p.i][top.p.j] + ", bombs left: " + bombsLeft[top.p.i][top.p.j]);
             int topDistance = timeSpent[top.p.i][top.p.j];
             if (isExit(top)) return topDistance;
             for (Point neighbor : neighboringPoints(top.p)) {
@@ -52,37 +48,18 @@ public class BombMan {
                 if (state[neighbor.i][neighbor.j] == UNDISCOVERED) {
                     state[neighbor.i][neighbor.j] = DISCOVERED;
                     Node neighborNode = new Node(neighbor);
-                    if (m[neighbor.i][neighbor.j] == '#' && bombsLeft[neighbor.i][neighbor.j] > 0) {
-                        q.add(neighborNode);
-
-                        useBomb(neighbor);
+                    q.add(neighborNode);
+                    if (m[neighbor.i][neighbor.j] == '#' && bombsLeft[top.p.i][top.p.j] > 0) {
+                        bombsLeft[neighbor.i][neighbor.j] = bombsLeft[top.p.i][top.p.j] - 1;
                         timeSpent[neighbor.i][neighbor.j] = topDistance + 3;
-                        m[neighbor.i][neighbor.j] = '.';
                     } else {
-                        q.add(neighborNode);
                         timeSpent[neighbor.i][neighbor.j] = topDistance + 1;
+                        bombsLeft[neighbor.i][neighbor.j] = bombsLeft[top.p.i][top.p.j];
                     }
                 }
             }
-
-            state[top.p.i][top.p.j] = FULLY_EXPLORED;
-            //undo bombs effects cause now we fully explored this node and came out of it without finding the exit
-            if (bombed[top.p.i][top.p.j]) {
-                undoBomb(top);
-            }
         }
         return -1;
-    }
-
-    private void undoBomb(Node node) {
-        bombsLeft[node.p.i][node.p.j]++;
-        bombed[node.p.i][node.p.j] = false;
-        m[node.p.i][node.p.j] = '.';
-    }
-
-    private void useBomb(Point nodeToBomb) {
-        bombed[nodeToBomb.i][nodeToBomb.j] = true;
-        bombsLeft[nodeToBomb.i][nodeToBomb.j]--;
     }
 
     private List<Point> neighboringPoints(Point p) {
