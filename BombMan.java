@@ -20,6 +20,7 @@ public class BombMan {
         bombed = new boolean[maze.length][maze[0].length()];
         state = new int[maze.length][maze[0].length()];
         bombsLeft = new int[maze.length][maze[0].length()];
+        for (int[] row : bombsLeft) Arrays.fill(row, bombs);
         parent = new Point[maze.length][maze[0].length()];
         timeSpent = new int[maze.length][maze[0].length()];
         for (int i = 0; i < maze.length; i++) {
@@ -51,10 +52,10 @@ public class BombMan {
                 if (state[neighbor.i][neighbor.j] == UNDISCOVERED) {
                     state[neighbor.i][neighbor.j] = DISCOVERED;
                     Node neighborNode = new Node(neighbor);
-                    if (m[neighbor.i][neighbor.j] == '#' && bombsLeft[start.i][start.j] > 0) {
+                    if (m[neighbor.i][neighbor.j] == '#' && bombsLeft[neighbor.i][neighbor.j] > 0) {
                         q.add(neighborNode);
 
-                        useBomb(start, neighbor);
+                        useBomb(neighbor);
                         timeSpent[neighbor.i][neighbor.j] = topDistance + 3;
                         m[neighbor.i][neighbor.j] = '.';
                     } else {
@@ -74,15 +75,14 @@ public class BombMan {
     }
 
     private void undoBomb(Node node) {
-        Point parent = this.parent[node.p.i][node.p.j];
-        bombsLeft[parent.i][parent.j]++;
+        bombsLeft[node.p.i][node.p.j]++;
         bombed[node.p.i][node.p.j] = false;
         m[node.p.i][node.p.j] = '.';
     }
 
-    private void useBomb(Point parent, Point nodeToBomb) {
+    private void useBomb(Point nodeToBomb) {
         bombed[nodeToBomb.i][nodeToBomb.j] = true;
-        bombsLeft[nodeToBomb.i][nodeToBomb.j] = bombsLeft[parent.i][parent.j] - 1;
+        bombsLeft[nodeToBomb.i][nodeToBomb.j]--;
     }
 
     private List<Point> neighboringPoints(Point p) {
