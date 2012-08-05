@@ -1,3 +1,5 @@
+package div2.medium;
+
 import java.util.HashSet;
 
 public class ColorfulChocolates {

@@ -1,4 +1,6 @@
-    /**
+package div1.easy;
+
+/**
      * SRM 538 DIV I
      */
 public class EvenRoute {

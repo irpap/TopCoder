@@ -1,3 +1,5 @@
+package div1.easy;
+
 /** SRM 146 DIV 1 */
 public class RectangularGrid {
     public long countRectangles (int width, int height) {

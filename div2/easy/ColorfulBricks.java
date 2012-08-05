@@ -1,3 +1,5 @@
+package div2.easy;
+
 public class ColorfulBricks {
 
     public int countLayouts(String bricks) {
