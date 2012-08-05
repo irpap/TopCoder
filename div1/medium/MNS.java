@@ -43,7 +43,7 @@ public class MNS {
 
     private int rowSum(int[] permutation, int start, int length) {
         int sum = 0;
-        for (int i = start; i < length; i++) {
+        for (int i = start * length; i < start * length + length; i++) {
             sum += permutation[i];
         }
         return sum;
