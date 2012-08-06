@@ -4,26 +4,28 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class MNS {
-    public int combos(int[] numbers) {
 
-        String numString = "";
-        for (int i : numbers) numString += i;
-        LinkedList<String> allPerms = allPermutations(numString);
+    static int N;
+
+    public int combos(int[] numbers) {
+        N = numbers.length;
+        LinkedList<Integer> numbersList = new LinkedList<Integer>();
+        for (int n : numbers) numbersList.add(n);
+        LinkedList<LinkedList<Integer>> allPerms = allPermutations(numbersList);
         int count = 0;
         HashSet<String> counted = new HashSet<String>();
-        for (String permutation : allPerms) {
-            if (!counted.contains(permutation)) {
-                counted.add(permutation);
-                int[] permutationNums = new int[permutation.length()];
-                for (int i = 0; i < permutation.length(); i++) permutationNums[i] = permutation.toCharArray()[i] - '0';
-                if (isMagicSquare(permutationNums)) count++;
+        for (LinkedList<Integer> permutation : allPerms) {
+            if (!counted.contains(permutation.toString())) {
+                counted.add(permutation.toString());
+                Integer[] permArray = permutation.toArray(new Integer[permutation.size()]);
+                if (isMagicSquare(permArray)) count++;
             }
         }
 
         return count;
     }
 
-    private boolean isMagicSquare(int[] permutation) {
+    private boolean isMagicSquare(Integer[] permutation) {
         int size = (int) Math.sqrt(permutation.length);
         int sum = rowSum(permutation, 0, size);
         for (int i = 1; i < size; i++) {
@@ -33,7 +35,7 @@ public class MNS {
         return true;
     }
 
-    private int columnSum(int[] permutation, int start, int length) {
+    private int columnSum(Integer[] permutation, int start, int length) {
         int sum = 0;
         for (int i = start; i < permutation.length; i += length) {
             sum += permutation[i];
@@ -41,7 +43,7 @@ public class MNS {
         return sum;
     }
 
-    private int rowSum(int[] permutation, int start, int length) {
+    private int rowSum(Integer[] permutation, int start, int length) {
         int sum = 0;
         for (int i = start * length; i < start * length + length; i++) {
             sum += permutation[i];
@@ -49,23 +51,24 @@ public class MNS {
         return sum;
     }
 
-
-    LinkedList<String> allPermutations(String s) {
-        LinkedList<String> result = new LinkedList<String>();
-
-        if (s.length() == 1) {
-            result.add(s);
+    LinkedList<LinkedList<Integer>> allPermutations(LinkedList<Integer> seq) {
+        LinkedList<LinkedList<Integer>> result = new LinkedList<LinkedList<Integer>>();
+        if (seq.size() == 1) {
+            result.add(seq);
             return result;
         }
-
-        for (int i = 0; i < s.length(); i++) {
-            String rest = s.substring(0, i) + s.substring(i + 1);
-            LinkedList<String> perms = allPermutations(rest);
-            for (int j = 0; j < perms.size(); j++) {
-                perms.set(j, s.charAt(i) + perms.get(j));
+        for (int i = 0; i < seq.size(); i++) {
+            Integer first = seq.get(i);
+            LinkedList<Integer> rest = new LinkedList<Integer>(seq);
+            rest.remove((int) i);
+            LinkedList<LinkedList<Integer>> restPermutations = allPermutations(rest);
+            for (LinkedList<Integer> perm : restPermutations) {
+                perm.addFirst(first);
+                result.add(perm);
             }
-            result.addAll(perms);
         }
         return result;
     }
+
+
 }
