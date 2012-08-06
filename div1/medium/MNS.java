@@ -60,7 +60,7 @@ public class MNS {
         for (int i = 0; i < seq.size(); i++) {
             Integer first = seq.get(i);
             LinkedList<Integer> rest = new LinkedList<Integer>(seq);
-            rest.remove((int) i);
+            rest.remove(first);
             LinkedList<LinkedList<Integer>> restPermutations = allPermutations(rest);
             for (LinkedList<Integer> perm : restPermutations) {
                 perm.addFirst(first);
