@@ -3,17 +3,13 @@ package div1.medium;
 import java.util.HashSet;
 
 public class MNS {
-
-    static int N;
     private HashSet<Integer> counted;
 
     public int combos(int[] numbers) {
-        N = numbers.length;
         counted = new HashSet<Integer>();
-        uniqueMagicSquarePermutationsCount(numbers, 0);
+        uniqueMagicSquarePermutations(numbers, 0);
         return counted.size();
     }
-
 
     private boolean isMagicSquare(int[] permutation) {
         int size = (int) Math.sqrt(permutation.length);
@@ -41,23 +37,21 @@ public class MNS {
         return sum;
     }
 
-    void uniqueMagicSquarePermutationsCount(int[] seq, int index) {
-        if (index == 8) {
-            if (isMagicSquare(seq)){
+    void uniqueMagicSquarePermutations(int[] seq, int index) {
+        if (index == seq.length) {
+            if (isMagicSquare(seq)) {
                 Integer value = 0;
                 for (int n : seq) value = value * 10 + n;
                 counted.add(value);
             }
         } else {
-            for (int i = index; i < 9; i++) {
+            for (int i = index; i < seq.length; i++) {
                 swap(index, i, seq);
-                uniqueMagicSquarePermutationsCount(seq, index + 1);
+                uniqueMagicSquarePermutations(seq, index + 1);
                 swap(index, i, seq);
             }
         }
     }
-
-
 
     private void swap(int i, int j, int[] a) {
         int tmp = a[i];
