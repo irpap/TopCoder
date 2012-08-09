@@ -1,5 +1,3 @@
-package div1.medium;
-
 import java.util.Arrays;
 
 public class SuperSort {

@@ -1,5 +1,3 @@
-package div2.hard;
-
 import java.util.LinkedList;
 import java.util.List;
 

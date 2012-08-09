@@ -1,5 +1,3 @@
-package div1.easy;
-
 public class DigitMultiples {
 
     /**

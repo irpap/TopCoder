@@ -1,5 +1,3 @@
-package div1.easy;
-
 /**
      * SRM 538 DIV I
      */

@@ -1,5 +1,3 @@
-package div1.easy;
-
 /** SRM 144 */
 public class BinaryCode {
 

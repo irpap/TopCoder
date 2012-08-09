@@ -1,5 +1,3 @@
-package div2.easy;
-
 import java.util.HashMap;
 
 /**

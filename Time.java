@@ -1,5 +1,3 @@
-package div2.easy;
-
 /**
  * SRM 144 DIV 2
  */

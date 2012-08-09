@@ -1,5 +1,3 @@
-package div2.medium;
-
 /**
  * SRM 546 DIV 2 *
  */
