@@ -46,14 +46,14 @@ public class Bonuses {
         }
         return result;
     }
-}
 
-class IndexedPercentage {
-    int index;
-    int percentage;
+    private static class IndexedPercentage {
+        int index;
+        int percentage;
 
-    IndexedPercentage(int index, int percentage) {
-        this.index = index;
-        this.percentage = percentage;
+        IndexedPercentage(int index, int percentage) {
+            this.index = index;
+            this.percentage = percentage;
+        }
     }
 }
