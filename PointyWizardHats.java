@@ -23,7 +23,7 @@ public class PointyWizardHats {
         graph = new boolean[m][n];
         for (int i = 0; i < topHeight.length; i++) {
             for (int j = 0; j < bottomHeight.length; j++) {
-                graph[i][j] = bottomRadius[j] > topRadius[i] && (bottomRadius[j] * topHeight[i] > topRadius[i] * bottomRadius[j]);
+                graph[i][j] = (bottomRadius[j] > topRadius[i]) && ((bottomRadius[j] * topHeight[i]) > (bottomHeight[j] * topRadius[i]));
             }
         }
         seen = new boolean[n];
@@ -31,6 +31,8 @@ public class PointyWizardHats {
         Arrays.fill(matchL, -1);
         matchR = new int[n];
         Arrays.fill(matchR, -1);
+
+        System.out.println("Graph: " + Arrays.deepToString(graph));
 
         int count = 0;
         for (int i = 0; i < m; i++) {
@@ -43,11 +45,10 @@ public class PointyWizardHats {
     boolean bpm(int u) {
         //try to match with all vertices on right side
         for (int v = 0; v < n; v++) {
-            if (!graph[u][v]) return false;
-            if (seen[v]) continue;
+            if (!graph[u][v] || seen[v]) continue;
             seen[v] = true;
-            //match u and v, if v is unassigned, or if v's match on the left side can be reassigned
-            if (matchR[v] < 0 || bpm(matchR[v])) {
+            //match u and v, if v is unassigned, or if v's match on the left side can be reassigned to another right vertex
+            if (matchR[v] == -1 || bpm(matchR[v])) {
                 matchL[u] = v;
                 matchR[v] = u;
                 return true;
