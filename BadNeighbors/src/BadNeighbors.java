@@ -12,28 +12,15 @@ public class BadNeighbors {
         int[] dp = new int[n];
         dp[0] = donations[0];
         for (int i = 1; i < n - 1; i++) {
-            int maxNotNeighborIndex = i;
-            for (int j = 0; j < i - 1; j++) {
-                if (dp[j] > dp[maxNotNeighborIndex]) {
-                    maxNotNeighborIndex = j;
-                }
-            }
-            dp[i] = dp[maxNotNeighborIndex] + donations[i];
+            dp[i] = max((i - 2 >= 0 ? dp[i - 2] : 0) + donations[i], dp[i - 1]);
         }
-
+        debug(dp);
         //that's correct except for the first element which is skipped.
         int[] dp2 = new int[n];
         dp2[1] = donations[1];
         for (int i = 2; i < n; i++) {
-            int maxNotNeighborIndex = i;
-            for (int j = 1; j < i - 1; j++) {
-                if (dp2[j] > dp2[maxNotNeighborIndex]) {
-                    maxNotNeighborIndex = j;
-                }
-            }
-            dp2[i] = dp2[maxNotNeighborIndex] + donations[i];
+            dp2[i] = max((i - 2 >= 0 ? dp2[i - 2] : 0) + donations[i], dp2[i - 1]);
         }
-
         int result = 0;
         for (int i = 0; i < dp.length - 1; i++) {
             result = max(result, dp[i]);
