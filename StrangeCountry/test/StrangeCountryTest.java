@@ -51,7 +51,8 @@ public class StrangeCountryTest {
 	
 	@Test
 	public void test4() {
-		String[] g = new String[] {"NYNNNN",
+		String[] g = new String[] {
+ "NYNNNN",
  "YNYNNN",
  "NYNYNN",
  "NNYNNN",

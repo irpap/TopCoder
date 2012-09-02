@@ -22,14 +22,14 @@ public class StrangeCountry {
         for (int i = 0; i < n; i++) if (redundantCount[i] == 0) return -1;
 
         //Otherwise all components have >0 redundant edges
-        //2 components with redundant edges can be merged by doing 1 operation. For convenience I do half operation per component
-        int halfOps = 0;
+        //2 components with redundant edges can be merged by doing 1 operation. So n components can be merged with n-1 operations
+        int componentsLeft = 0;
         for (int i = 0; i < n; i++) {
             if (redundantCount[i] > 0) {
-                halfOps++;
+                componentsLeft++;
             }
         }
-        return operations + (halfOps / 2);
+        return operations + (componentsLeft - 1);
     }
 
     private boolean thereIsDisconnectedVertex(String[] g) {
@@ -37,30 +37,30 @@ public class StrangeCountry {
         return false;
     }
 
-    private void dfs(String[] g, int u, int component) {
-        entryTime[u] = time++;
-        String potentialNeighbors = g[u];
-        for (int v = 0; v < potentialNeighbors.length(); v++) {
-            if (potentialNeighbors.charAt(v) == 'Y' && entryTime[v] != -1 && finishTime[v] == -1) {
-                //v is still in progress - this is a backedge, so there is a cycle
-                redundantCount[component]++;
-            }
-            if (potentialNeighbors.charAt(v) == 'Y' && entryTime[v] == -1) {
-                dfs(g, v, component);
-            }
-        }
-        finishTime[u] = time++;
-    }
-
     private void calculateCyclesPerComponent(String[] g) {
         int component = 0;
         for (int i = 0; i < g.length; i++) {
             if (entryTime[i] == -1) {
-                dfs(g, i, component++);
+                redundantCount[component] = 0;
+                dfs(g, i, -1, component);
+            }
+            component++;
+        }
+    }
+
+    private void dfs(String[] g, int u, int parent, int component) {
+        entryTime[u] = time++;
+        String potentialNeighbors = g[u];
+        for (int v = 0; v < potentialNeighbors.length(); v++) {
+            if (parent != -1 && v != parent && potentialNeighbors.charAt(v) == 'Y' && entryTime[v] != -1 && finishTime[v] == -1) {
+                //v is still in progress - this is a backedge, so there is a cycle. unless it's to the immediate parent
+                redundantCount[component]++;
+            }
+            if (potentialNeighbors.charAt(v) == 'Y' && entryTime[v] == -1) {
+                dfs(g, v, u, component);
             }
         }
-        //now the redundant edges count is double than the real one because the graph is undirected and we counted each edge twice
-        for (int i = 0; i < n && redundantCount[i] != -1; i++) redundantCount[i] /= 2;
+        finishTime[u] = time++;
     }
 
     private int mergeRedundantWithNonRedundantEdgeComponents() {
