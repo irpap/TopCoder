@@ -1,6 +1,8 @@
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.lang.Math.*;
+
 /**
  * Single Round Match 146 Round 1 - Division II, Level Three
  */
@@ -26,18 +28,13 @@ public class BridgeCrossing {
                     Integer person1 = sideA.get(i);
                     Integer person2 = sideA.get(j);
 
-                    LinkedList<Integer> newA = new LinkedList<Integer>(sideA);
-                    LinkedList<Integer> newB = new LinkedList<Integer>(sideB);
+                    move(person1, sideA, sideB);
+                    move(person2, sideA, sideB);
 
-                    newA.remove(person1);
-                    newA.remove(person2);
+                    minTime = min(minTime, max(person1, person2) + movePeople(sideA, sideB, !torchIsAtSideA));
 
-                    newB.add(person1);
-                    newB.add(person2);
-
-                    int time = Math.max(person1, person2) + movePeople(newA, newB, !torchIsAtSideA);
-                    minTime = Math.min(minTime, time);
-
+                    move(person1, sideB, sideA);
+                    move(person2, sideB, sideA);
                 }
             }
         } else {
@@ -45,17 +42,18 @@ public class BridgeCrossing {
             for (int i = 0; i < sideB.size(); i++) {
                 Integer personToMove = sideB.get(i);
 
-                LinkedList<Integer> newA = new LinkedList<Integer>(sideA);
-                LinkedList<Integer> newB = new LinkedList<Integer>(sideB);
+                move(personToMove, sideB, sideA);
 
-                newB.remove(personToMove);
-                newA.add(personToMove);
+                minTime = min(minTime, personToMove + movePeople(sideA, sideB, !torchIsAtSideA));
 
-                int time = personToMove + movePeople(newA, newB, !torchIsAtSideA);
-                minTime = Math.min(minTime, time);
-
+                move(personToMove, sideA, sideB);
             }
         }
         return minTime;
+    }
+
+    private void move(Integer person, List<Integer> from, List<Integer> to) {
+        from.remove(person);
+        to.add(person);
     }
 }
