@@ -7,8 +7,7 @@ import java.util.PriorityQueue;
  * TCCC '04 Round 4 - 500
  */
 public class BombMan {
-    int n;
-    int m;
+    int n, m;
     private boolean[][][] seen;
 
     public int shortestPath(String[] maze, int bombs) {
@@ -18,7 +17,7 @@ public class BombMan {
 
         Point start = findStart(maze);
 
-        PriorityQueue<Node> q = new PriorityQueue<Node>(n * m, new Comparator<Node>() {
+        PriorityQueue<Node> q = new PriorityQueue<Node>(n * m * (bombs + 1), new Comparator<Node>() {
             public int compare(Node o1, Node o2) {
                 return o1.timeSpent - o2.timeSpent;
             }
@@ -26,10 +25,10 @@ public class BombMan {
         q.add(new Node(start.x, start.y, maze[start.x].charAt(start.y), bombs, 0));
         while (!q.isEmpty()) {
             Node top = q.poll();
-            if (seen[top.x][top.y][top.bombsLeft]) continue;
-            seen[top.x][top.y][top.bombsLeft] = true;
+            if (seen[top.pos.x][top.pos.y][top.bombsLeft]) continue;
+            seen[top.pos.x][top.pos.y][top.bombsLeft] = true;
             if (top.cellType == 'E') return top.timeSpent;
-            for (Point np : neighboringPoints(top)) {
+            for (Point np : neighboringPoints(top.pos)) {
                 if (maze[np.x].charAt(np.y) == '#') {
                     if (top.bombsLeft == 0) continue;
                     q.add(new Node(np.x, np.y, maze[np.x].charAt(np.y), top.bombsLeft - 1, top.timeSpent + 3));
@@ -40,7 +39,7 @@ public class BombMan {
         return -1;
     }
 
-    private List<Point> neighboringPoints(Node p) {
+    private List<Point> neighboringPoints(Point p) {
         LinkedList<Point> neighbors = new LinkedList<Point>();
         int dx[] = {1, 0, -1, 0}, dy[] = {0, 1, 0, -1};
         for (int i = 0; i < 4; i++) {
@@ -64,12 +63,10 @@ public class BombMan {
         private char cellType;
         private int timeSpent;
         private int bombsLeft;
-        private int x;
-        private int y;
+        private Point pos;
 
         public Node(int x, int y, char type, int bombs, int time) {
-            this.x = x;
-            this.y = y;
+            this.pos = new Point(x, y);
             this.bombsLeft = bombs;
             this.cellType = type;
             this.timeSpent = time;
@@ -77,12 +74,7 @@ public class BombMan {
     }
 
     private static class Point {
-        int x;
-        int y;
-
-        private Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
+        int x, y;
+        private Point(int x, int y) { this.x = x; this.y = y; }
     }
 }
