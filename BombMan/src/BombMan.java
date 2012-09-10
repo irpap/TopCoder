@@ -41,9 +41,9 @@ public class BombMan {
 
     private List<Point> neighboringPoints(Point p) {
         LinkedList<Point> neighbors = new LinkedList<Point>();
-        int dx[] = {1, 0, -1, 0}, dy[] = {0, 1, 0, -1};
-        for (int i = 0; i < 4; i++) {
-            int tx = p.x + dx[i], ty = p.y + dy[i];
+        int[][] dp = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+        for (int[] d : dp) {
+            int tx = p.x + d[0], ty = p.y + d[1];
             if (tx < 0 || ty < 0 || tx >= n || ty >= m) continue;
             neighbors.add(new Point(tx, ty));
         }
