@@ -7,94 +7,82 @@ import java.util.PriorityQueue;
  * TCCC '04 Round 4 - 500
  */
 public class BombMan {
-    private static int UNDISCOVERED = 0;
-    private static int DISCOVERED = 1;
-    private Node[][] nodes;
+    int n;
+    int m;
+    private boolean[][][] seen;
 
     public int shortestPath(String[] maze, int bombs) {
-        nodes = new Node[maze.length][maze[0].length()];
-        for (int i = 0; i < maze.length; i++) {
-            for (int j = 0; j < maze[i].length(); j++) {
-                nodes[i][j] = new Node(new Point(i, j), maze[i].charAt(j));
-            }
-        }
+        n = maze.length;
+        m = maze[0].length();
+        seen = new boolean[n][m][bombs + 1];
 
-        Point start = findStart(nodes);
+        Point start = findStart(maze);
 
-        PriorityQueue<Node> q = new PriorityQueue<Node>(nodes.length * nodes[0].length, new Comparator<Node>() {
+        PriorityQueue<Node> q = new PriorityQueue<Node>(n * m, new Comparator<Node>() {
             public int compare(Node o1, Node o2) {
-                return nodes[o1.p.i][o1.p.j].timeSpent - nodes[o2.p.j][o2.p.j].timeSpent;
+                return o1.timeSpent - o2.timeSpent;
             }
         });
-
-        q.add(new Node(start, nodes[start.i][start.j].m));
-        nodes[start.i][start.j].state = DISCOVERED;
-        nodes[start.i][start.j].bombsLeft = bombs;
+        q.add(new Node(start.x, start.y, maze[start.x].charAt(start.y), bombs, 0));
         while (!q.isEmpty()) {
             Node top = q.poll();
-            int topDistance = nodes[top.p.i][top.p.j].timeSpent;
-            if (isExit(top)) return topDistance;
-            for (Point neighbor : neighboringPoints(top.p)) {
-                if (nodes[neighbor.i][neighbor.j].state == UNDISCOVERED) {
-                    nodes[neighbor.i][neighbor.j].state = DISCOVERED;
-                    Node neighborNode = new Node(neighbor, nodes[neighbor.i][neighbor.j].m);
-                    q.add(neighborNode);
-                    if (nodes[neighbor.i][neighbor.j].m == '#' && nodes[top.p.i][top.p.j].bombsLeft > 0) {
-                        nodes[neighbor.i][neighbor.j].bombsLeft = nodes[top.p.i][top.p.j].bombsLeft - 1;
-                        nodes[neighbor.i][neighbor.j].timeSpent = topDistance + 3;
-                    } else {
-                        nodes[neighbor.i][neighbor.j].timeSpent = topDistance + 1;
-                        nodes[neighbor.i][neighbor.j].bombsLeft = nodes[top.p.i][top.p.j].bombsLeft;
-                    }
-                }
+            if (seen[top.x][top.y][top.bombsLeft]) continue;
+            seen[top.x][top.y][top.bombsLeft] = true;
+            if (top.cellType == 'E') return top.timeSpent;
+            for (Point np : neighboringPoints(top)) {
+                if (maze[np.x].charAt(np.y) == '#') {
+                    if (top.bombsLeft == 0) continue;
+                    q.add(new Node(np.x, np.y, maze[np.x].charAt(np.y), top.bombsLeft - 1, top.timeSpent + 3));
+                } else
+                    q.add(new Node(np.x, np.y, maze[np.x].charAt(np.y), top.bombsLeft, top.timeSpent + 1));
             }
         }
         return -1;
     }
 
-    private List<Point> neighboringPoints(Point p) {
+    private List<Point> neighboringPoints(Node p) {
         LinkedList<Point> neighbors = new LinkedList<Point>();
-        if (p.i - 1 >= 0) neighbors.add(new Point(p.i - 1, p.j));
-        if (p.j - 1 >= 0) neighbors.add(new Point(p.i, p.j - 1));
-        if (p.i + 1 < nodes.length) neighbors.add(new Point(p.i + 1, p.j));
-        if (p.j + 1 < nodes.length) neighbors.add(new Point(p.i, p.j + 1));
+        int dx[] = {1, 0, -1, 0}, dy[] = {0, 1, 0, -1};
+        for (int i = 0; i < 4; i++) {
+            int tx = p.x + dx[i], ty = p.y + dy[i];
+            if (tx < 0 || ty < 0 || tx >= n || ty >= m) continue;
+            neighbors.add(new Point(tx, ty));
+        }
         return neighbors;
     }
 
-    private boolean isExit(Node node) {
-        return nodes[node.p.i][node.p.j].m == 'E';
-    }
-
-    private Point findStart(Node[][] m) {
-        for (int i = 0; i < m.length; i++) {
-            for (int j = 0; j < m[i].length; j++) {
-                if (nodes[i][j].m == 'B') return new Point(i, j);
+    private Point findStart(String[] maze) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (maze[i].charAt(j) == 'B') return new Point(i, j);
             }
         }
         return null;
     }
 
     private static class Node {
-        private char m;
+        private char cellType;
         private int timeSpent;
-        private int state;
         private int bombsLeft;
+        private int x;
+        private int y;
 
-        public Point p;
-
-        public Node(Point point, char m) {
-            this.p = point;
-            this.m = m;
+        public Node(int x, int y, char type, int bombs, int time) {
+            this.x = x;
+            this.y = y;
+            this.bombsLeft = bombs;
+            this.cellType = type;
+            this.timeSpent = time;
         }
     }
 
     private static class Point {
-        int i;
-        int j;
+        int x;
+        int y;
 
-        private Point(int i, int j) {
-            this.i = i;
-            this.j = j;
+        private Point(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
     }
 }
