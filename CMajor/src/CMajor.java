@@ -1,5 +1,4 @@
-import java.math.BigInteger;
-import java.util.*;
+import java.util.Arrays;
 
 import static java.lang.Math.max;
 
@@ -7,33 +6,30 @@ import static java.lang.Math.max;
  * SRM 289 DIV 1
  */
 public class CMajor {
-    final int keys = 12;
-    int[] whiteKeys = {0, 2, 3, 5, 7, 8, 10};
     int n;
-    int[][] play;
-    private String[] fragments;
-
-    boolean isWhite(int k) {
-        for (int key : whiteKeys) if (k == key) return true;
-        return false;
+    static final int keys = 12;
+    static final int[] whiteKeys = {0, 2, 3, 5, 7, 8, 10};
+    static final boolean[] isWhite = new boolean[keys];
+    static {
+        for (int whiteKey : whiteKeys) isWhite[whiteKey] = true;
     }
 
-    public int getLongest(String[] fragments) {
-        int longest = 0;
-        this.fragments = fragments;
-        n = fragments.length;
-        play = new int[keys][n];
-        for (int[] ints : play) Arrays.fill(ints, -2);
+    int[][] play;
+    String[] fragments;
 
+    public int getLongest(String[] fragm) {
+        n = fragm.length;
+        fragments = fragm;
+        play = new int[keys][n];  for (int[] p : play) Arrays.fill(p, -2);
+
+        int longest = 0;
         for (final int startKey : whiteKeys) {
             subset:
-            for (int mask = (1 << n) - 1; mask > 0; mask--) {
+            for (int mask = 1; mask < 1 << n; mask++) {
                 int endKey = startKey;
-                for (int i = 0; i < n; i++) {
-                    if ((mask & 1 << i) != 0) {
-                        endKey = play(endKey, i);
-                        if (endKey < 0) continue subset;
-                    }
+                for (int i = 0; i < n; i++) if ((mask & 1 << i) != 0) {
+                    endKey = play(endKey, i);
+                    if (endKey < 0) continue subset;
                 }
                 longest = max(longest, length(mask));
             }
@@ -54,10 +50,9 @@ public class CMajor {
         if (play[key][f] != -2) return play[key][f];
         String[] jumps = fragments[f].split(" ");
         for (String jump : jumps) {
-            Integer intJump = Integer.valueOf(jump);
-            key = (key + intJump) % keys;
+            key = (key + Integer.valueOf(jump)) % keys;
             if (key < 0) key = keys + key;
-            if (!isWhite(key)) {
+            if (!isWhite[key]) {
                 play[key][f] = -1;
                 return -1;
             }
