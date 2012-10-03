@@ -3,58 +3,39 @@ import java.util.Comparator;
 
 /**
  * Fails tests
- *  SRM 145 DIV 1
+ * SRM 145 DIV 1
  */
 public class Bonuses {
 
     public int[] getDivision(int[] points) {
-        final int[] percentages = new int[points.length];
+        int n = points.length;
+        final int[] percentages = new int[n];
+
         int sum = 0;
         for (int p : points) sum += p;
-        for (int i = 0; i < points.length; i++) {
-            final double percent = (double) points[i] / (double) sum;
-            percentages[i] = (int) (percent * 100);   //keeping 2 decimals
-        }
-        int percentSum = 0;
-        for (int p : percentages) percentSum += p;
 
-        //Distribute the leftover amount
-        int leftOver = 100 - percentSum;
-        final IndexedPercentage[] indexedPercentages = new IndexedPercentage[percentages.length];
-        for (int i = 0; i < percentages.length; i++) {
-            indexedPercentages[i] = new IndexedPercentage(i, percentages[i]);
+        int totalPercentageGiven = 0;
+        for (int i = 0; i < n; i++) {
+            percentages[i] = (100 * points[i] / sum);
+            totalPercentageGiven += percentages[i];
         }
-        //stable sorting by reverse percentage, ie biggest first
-        Arrays.sort(indexedPercentages, new Comparator<IndexedPercentage>() {
-            public int compare(IndexedPercentage o1, IndexedPercentage o2) {
-                return o2.percentage - o1.percentage;
+
+        int leftOver = 100 - totalPercentageGiven;
+        boolean[] gotOne = new boolean[n];
+
+        while (leftOver > 0) {
+            int nextIndex = -1;
+            int maxPoints = 0;
+            for (int i = n - 1; i >= 0; i--) {
+                if (!gotOne[i] && points[i] >= maxPoints) {
+                    nextIndex = i;
+                    maxPoints = points[i];
+                }
             }
-        });
-        //increasing the bonus of the leftover best people by 1
-        for (int i = 0; i < leftOver; i++) {
-            indexedPercentages[i].percentage++;
+            percentages[nextIndex]++;
+            gotOne[nextIndex] = true;
+            leftOver--;
         }
-        //restore original employee order
-        Arrays.sort(indexedPercentages, new Comparator<IndexedPercentage>() {
-            public int compare(IndexedPercentage o1, IndexedPercentage o2) {
-                return o1.index - o2.index;
-            }
-        });
-
-        final int[] result = new int[indexedPercentages.length];
-        for (int i = 0; i < indexedPercentages.length; i++) {
-            result[i] = indexedPercentages[i].percentage;
-        }
-        return result;
-    }
-
-    private static class IndexedPercentage {
-        int index;
-        int percentage;
-
-        IndexedPercentage(int index, int percentage) {
-            this.index = index;
-            this.percentage = percentage;
-        }
+        return percentages;
     }
 }

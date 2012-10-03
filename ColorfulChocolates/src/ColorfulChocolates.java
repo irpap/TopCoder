@@ -1,4 +1,3 @@
-/** Fails system tests - in progress */
 public class ColorfulChocolates {
 
     public int maximumSpread (String chocolates, int maxSwaps) {
