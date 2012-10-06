@@ -5,7 +5,7 @@ import static java.lang.Math.max;
 public class XorTravelingSalesman {
 
     public int maxProfit(int[] cityValues, String[] roads) {
-        boolean[][] visited = new boolean[60][2000];
+        long[] visited = new long[2000];
         int n = cityValues.length;
         LinkedList<Integer> stack = new LinkedList<Integer>();
         LinkedList<Integer> profits = new LinkedList<Integer>();
@@ -15,15 +15,15 @@ public class XorTravelingSalesman {
         profits.add(cityValues[0]);
 
         while (!stack.isEmpty()) {
-            Integer top = stack.pop();
-            Integer profit = profits.pop();
-            visited[top][profit] = true;
+            Integer top = stack.removeFirst();
+            Integer profit = profits.removeFirst();
+            visited[profit] |= 1<<top;
             maxProfit = max(profit, maxProfit);
             for (int i = 0; i < n; i ++) if (roads[top].charAt(i)=='Y') {
                 int nextProfit = profit ^ cityValues[i];
-                if (!visited[i][nextProfit]) {
-                    stack.push(i);
-                    profits.push(nextProfit);
+                if ((visited[nextProfit] & 1<<i) == 0) {
+                    stack.addFirst(i);
+                    profits.addFirst(nextProfit);
                 }
             }
         }
