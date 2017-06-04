@@ -1,5 +1,4 @@
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 
 /**
  * 2004 TCCC Online Round 1 - Division I, Level Two
@@ -7,44 +6,53 @@ import java.util.Comparator;
 
 public class FlowerGarden {
 
-
-    private Flower[] flowers;
-
     public int[] getOrdering(int[] height, int[] bloom, int[] wilt) {
-        flowers = new Flower[height.length];
+
+        Flower[] flowers = new Flower[height.length];
         for (int i = 0; i < height.length; i++) {
             flowers[i] = new Flower(height[i], bloom[i], wilt[i]);
         }
 
-
         Arrays.sort(flowers, new Comparator<Flower>() {
             public int compare(Flower f1, Flower f2) {
-                if (livesOverlap(f1, f2)) {
-                    f1.born = f2.born = Math.min(f1.born, f2.born);
-                    f1.die = f2.die = Math.max(f1.die, f2.die);
-                    return f1.height - f2.height;
-
-                } else return (f2.height - f1.height);
+                return f1.height - f2.height;
             }
         });
 
-        int[] order = new int[flowers.length];
+        List<Flower> result = new LinkedList<Flower>();
+        result.add(flowers[0]);
 
-        for (int i = 0; i < flowers.length; i++) {
-            order[i] = flowers[i].height;
+        for (int i = 1; i < flowers.length; i++) {
+            Flower current = flowers[i];
+            int insertIndex = 0;
+
+            for (int j = 0; j < result.size(); j++) {
+                // Starting from the end, if we see a flower that we would block stay behind it.
+                Flower e = result.get(result.size() - 1 - j);
+                if (livesOverlap(e, current) && e.height < current.height) {
+                    insertIndex = result.size() - j;
+                    break;
+                }
+            }
+            result.add(insertIndex, current);
         }
-        return order;
+
+
+        int[] resultHeights = new int[height.length];
+        for (int i = 0; i < result.size(); i++) {
+            resultHeights[i] = result.get(i).height;
+        }
+        return resultHeights;
     }
 
     private boolean livesOverlap(Flower f1, Flower f2) {
         return Math.min(f1.die, f2.die) >= Math.max(f1.born, f2.born);
     }
 
-
     private static class Flower {
-        int height;
-        int born;
-        int die;
+        final int height;
+        final int born;
+        final int die;
 
         private Flower(int height, int born, int die) {
             this.height = height;
@@ -53,3 +61,4 @@ public class FlowerGarden {
         }
     }
 }
+
