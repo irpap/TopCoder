@@ -29,7 +29,7 @@ public class FlowerGarden {
             for (int j = 0; j < result.size(); j++) {
                 // Starting from the end, if we see a flower that we would block stay behind it.
                 Flower e = result.get(result.size() - 1 - j);
-                if (livesOverlap(e, current) && e.height < current.height) {
+                if (livesOverlap(e, current)) {
                     insertIndex = result.size() - j;
                     break;
                 }
